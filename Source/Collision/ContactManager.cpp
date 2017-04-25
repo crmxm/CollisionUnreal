@@ -41,10 +41,10 @@ void ContactManager::ResolveTop()
 
 	float e = std::min(top.pCO1->rCoeff, top.pCO2->rCoeff);
 
-	FVector kAL;//TODO
-	FVector kBL;//
-	FVector uAL;//
-	FVector uBL;//
+	FVector kAL = top.pCO1->root->ComponentToWorld.InverseTransformVector(top.kA);
+	FVector kBL = top.pCO2->root->ComponentToWorld.InverseTransformVector(top.kB);
+	FVector uAL = top.pCO1->inertiaInv.TransformVector(kAL);
+	FVector uBL = top.pCO2->inertiaInv.TransformVector(kBL);
 
 	float numer = -(1 + e) * top.nSpeed;
 	float denom = top.pCO1->massInv + top.pCO2->massInv + FVector::DotProduct(kAL, uAL) + FVector::DotProduct(kBL, uBL);

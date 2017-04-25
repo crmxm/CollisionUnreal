@@ -26,4 +26,5 @@ public:
 
 public:
 	void DebugRotate();
+	void DebugSpeedUp();
 };

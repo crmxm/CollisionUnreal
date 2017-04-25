@@ -80,6 +80,8 @@ private:
 		{
 			obj[i]->Translate(-obj[i]->time);
 			obj[i]->Rotate(-obj[i]->time);
+			obj[i]->UpdateVelocity();
+			obj[i]->UpdateAngularV();
 		}
 	};
 	friend class ACollisionManagerActor;

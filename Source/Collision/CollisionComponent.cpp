@@ -22,6 +22,8 @@ void UCollisionComponent::BeginPlay()
 	Super::BeginPlay();
 
 	CollisionManager::instance->AddObj(this);
+
+	root = GetAttachmentRoot();
 	// ...
 	
 }

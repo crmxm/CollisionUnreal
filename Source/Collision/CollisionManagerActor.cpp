@@ -24,7 +24,12 @@ void ACollisionManagerActor::BeginPlay()
 	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
 	if (InputComponent)
+	{
 		InputComponent->BindAction("DebugInput0", EInputEvent::IE_Pressed, this, &ACollisionManagerActor::DebugRotate);
+		InputComponent->BindAction("DebugInput1", EInputEvent::IE_Pressed, this, &ACollisionManagerActor::DebugSpeedUp);
+	}
+
+	CollisionManager::instance->SetWorking(false);
 }
 
 void ACollisionManagerActor::EndPlay(const EEndPlayReason::Type)
@@ -49,4 +54,10 @@ void ACollisionManagerActor::DebugRotate()
 {
 	const float MATH_PI = 3.1415926f;
 	CollisionManager::instance->obj[0]->Rotate({ MATH_PI / 4, 0, 0 });
+}
+
+void ACollisionManagerActor::DebugSpeedUp()
+{
+	CollisionManager::instance->SetWorking(true);
+	CollisionManager::instance->obj[0]->velocity = { 0, 50, 0 };
 }

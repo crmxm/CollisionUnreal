@@ -7,6 +7,10 @@
 #include "Vector.h"
 
 #include "CollisionComponent.generated.h"
+
+class USphereCollisionComponent;
+class UBoxCollisionComponent;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class COLLISION_API UCollisionComponent : public USceneComponent
 {
@@ -24,17 +28,19 @@ public:
 	// Called every frame
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
-private:
-
-	//MoI, MoIInv;
+protected:
 	FVector centerL;
 	FVector impulse;
 	FVector angularI;
 
 public:
+	UPROPERTY(EditInstanceOnly)
 	bool isStatic;
 	float time;
-	float mass, massInv;
+	UPROPERTY(EditInstanceOnly)
+	float mass;
+	float massInv;
+	FMatrix inertia, inertiaInv;
 
 	FVector center;
 	FVector velocity;
@@ -42,8 +48,21 @@ public:
 
 	float fCoeff, rCoeff;
 
-private:
-	virtual void Translate(const FVector & v) { this->GetAttachmentRoot()->RelativeLocation += this->GetAttachmentRoot()->ComponentToWorld.InverseTransformVector(v); center += v; };
+	USceneComponent * root;
+
+protected:
+	virtual void Translate(const FVector & v) 
+	{ 
+		center += v; 
+		FQuat T = root->ComponentToWorld.GetRotation();
+		FQuat B = root->RelativeRotation.Quaternion();
+		FQuat AInv = B * T.Inverse();
+		FVector temp = AInv.RotateVector(v);
+
+		root->RelativeLocation += temp;
+		root->UpdateComponentToWorld(); 
+	};
+
 	virtual void Rotate(const FVector & v) 
 	{
 		float angle = v.Size();
@@ -51,28 +70,29 @@ private:
 		FVector axis = v;
 		axis.Normalize();
 
-		auto a = GetAttachmentRoot();
-
 		FQuat R(axis, angle);
-		FQuat T = GetAttachmentRoot()->ComponentToWorld.GetRotation();
-		FQuat B = GetAttachmentRoot()->RelativeRotation.Quaternion();
-		FQuat A = T * B.Inverse();
+		FQuat T = root->ComponentToWorld.GetRotation();
+		FQuat B = root->RelativeRotation.Quaternion();
 		FQuat AInv = B * T.Inverse();
 		FQuat Bp = AInv * R * T;
-		GetAttachmentRoot()->RelativeRotation = Bp.Rotator();
+		root->RelativeRotation = Bp.Rotator();
 
-		a->UpdateComponentToWorld();
+		root->UpdateComponentToWorld();
+	};
 
-	};//TODO
+
 public:
 	inline void SetImpulse(const FVector & v) { impulse += v; };
 	inline void SetAngularI(const FVector & v) { angularI += v; };
-	inline void Translate(float time) { Translate(velocity * time); };
-	inline void Rotate(float time) { Rotate(angularV * time); };
+	inline void Translate(float t) { Translate(velocity * t); };
+	inline void Rotate(float t) { Rotate(angularV * t); };
 	inline void UpdateVelocity() { velocity += impulse * massInv; impulse.Set(0, 0, 0); };
+	inline void UpdateAngularV() { angularV += inertiaInv.TransformVector(angularI); angularI.Set(0, 0, 0); };
 
-	virtual bool CollisionDetect(const UCollisionComponent * pPO) { return false; };
-	virtual void ApplyForce(float time) {};
+	virtual bool SphereCollisionDetect(const USphereCollisionComponent *) const { return false; };
+	virtual bool BoxCollisionDetect(const UBoxCollisionComponent *) const { return false; };
+	virtual bool CollisionDetect(const UCollisionComponent * pPO) const { return false; };
+	virtual void ApplyForce(float t) {};
 
 	friend class ACollisionManagerActor;
 };
