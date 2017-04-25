@@ -11,7 +11,8 @@
 class USphereCollisionComponent;
 class UBoxCollisionComponent;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+//UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( )
 class COLLISION_API UCollisionComponent : public USceneComponent
 {
 	GENERATED_BODY()
@@ -43,10 +44,15 @@ public:
 	FMatrix inertia, inertiaInv;
 
 	FVector center;
+	UPROPERTY(EditInstanceOnly)
 	FVector velocity;
+	UPROPERTY(EditInstanceOnly)
 	FVector angularV;
 
-	float fCoeff, rCoeff;
+	UPROPERTY(EditInstanceOnly)
+	float fCoeff;
+	UPROPERTY(EditInstanceOnly)
+	float rCoeff;
 
 	USceneComponent * root;
 

@@ -2,10 +2,9 @@
 
 #include "Collision.h"
 #include "SphereCollisionComponent.h"
+#include "BoxCollisionComponent.h"
 
 #include "ContactManager.h"
-
-static inline float Sqr(float a) { return a * a; };
 
 void USphereCollisionComponent::BeginPlay()
 {
@@ -37,5 +36,16 @@ bool USphereCollisionComponent::SphereCollisionDetect(const USphereCollisionComp
 
 bool USphereCollisionComponent::BoxCollisionDetect(const UBoxCollisionComponent * pBCC) const
 {
-	return false;
+	FVector point = ClosestPointOnBox(center, pBCC);
+	FVector dist = point - center;
+
+	if (dist.SizeSquared() > Sqr(radius))
+		return false;
+
+	float f = dist.Size();
+	dist.Normalize();
+
+	ContactManager::instance->AddContact((UCollisionComponent *) pBCC, (UCollisionComponent *)this,
+		radius - f, dist, point);
+	return true;
 }

@@ -33,4 +33,5 @@ public:
 	virtual bool BoxCollisionDetect(const UBoxCollisionComponent * pBCO) const;
 
 	virtual bool CollisionDetect(const UCollisionComponent * pCO) const { return pCO->SphereCollisionDetect(this); };
+	friend class UBoxCollisionComponent;
 };

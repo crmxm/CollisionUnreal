@@ -59,5 +59,4 @@ void ACollisionManagerActor::DebugRotate()
 void ACollisionManagerActor::DebugSpeedUp()
 {
 	CollisionManager::instance->SetWorking(true);
-	CollisionManager::instance->obj[0]->velocity = { 0, 50, 0 };
 }
