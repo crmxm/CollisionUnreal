@@ -4,6 +4,8 @@
 #include "BoxCollisionComponent.h"
 #include "SphereCollisionComponent.h"
 #include "ContactManager.h"
+#include "CollisionManager.h"
+#include "ForceFieldTriggerComponent.h"
 
 void UBoxCollisionComponent::BeginPlay()
 {
@@ -58,7 +60,7 @@ bool UBoxCollisionComponent::SphereCollisionDetect(const USphereCollisionCompone
 	return true;
 }
 
-static bool CollisionTestBoxs(const UBoxCollisionComponent * pBCC1, const UBoxCollisionComponent * pBCC2)
+bool CollisionTestBoxs(const UBoxCollisionComponent * pBCC1, const UBoxCollisionComponent * pBCC2)
 {
 	FTransform trans1 = pBCC1->GetComponentToWorld();
 	FTransform trans2 = pBCC2->GetComponentToWorld();
@@ -280,6 +282,27 @@ void UBoxCollisionComponent::DrawCollider() const
 	
 	for (auto pair : EdgeVertexLUT)
 		DrawDebugLine(GetWorld(), vertice[pair[0]], vertice[pair[1]], FColor::Green);
+}
+
+void UBoxCollisionComponent::ApplyForce(float t, const UForceFieldTriggerComponent ** force, unsigned int size)
+{
+	FVector a(0, 0, 0);
+	FVector w(0, 0, 0);
+
+	for (unsigned int i = 0; i < size; i++)
+	{
+		auto f = force[i];
+		if (f->BoxCollisionDetect(this))
+		{
+			a += f->GetAcceleration(velocity);
+			w += f->GetAngularA(angularV, radiusVector.SizeSquared());
+		}
+	}
+
+	velocity += a * t;
+	angularV += inertiaInv.GetScaleVector() * w * mass * t;
+
+	UCollisionComponent::ApplyForce(t, force, size);
 }
 
 FVector ClosestPointOnBox(const FVector & v, const UBoxCollisionComponent * pBCC)

@@ -7,6 +7,8 @@
 #include "CollisionComponent.h"
 
 const unsigned int MAX_COLLISION_OBJ = 256;
+const unsigned int MAX_FORCE = 4;
+
 
 /**
  * 
@@ -20,14 +22,16 @@ public:
 	static void Destroy() { if (!instance) return; createCount--; if (createCount > 0) return; delete instance; instance = nullptr; };
 private:
 	UCollisionComponent * obj[MAX_COLLISION_OBJ];
+	UForceFieldTriggerComponent * force[MAX_FORCE];
 
 	unsigned int size;
 	unsigned int nonStaticSize;
+	unsigned int forceSize;
 
 	bool isWorking;
 
 private:
-	CollisionManager() : size(0), nonStaticSize(0), isWorking(false) {};
+	CollisionManager() : size(0), nonStaticSize(0), isWorking(false), forceSize(0) {};
 public:
 	~CollisionManager() {};
 
@@ -38,6 +42,10 @@ public:
 		obj[size++] = (pCO->isStatic) ? pCO : obj[nonStaticSize];
 		if (!pCO->isStatic)
 			obj[nonStaticSize++] = pCO;
+	};
+	void AddForce(UForceFieldTriggerComponent * pFFTC)
+	{
+		force[forceSize++] = pFFTC;
 	};
 
 	void RemoveObj(UCollisionComponent * pCO)
@@ -64,11 +72,24 @@ public:
 			obj[nonStaticSize] = obj[--size];
 		}
 	};
+	void RemoveForce(UForceFieldTriggerComponent * pFFTC)
+	{
+		unsigned int index;
+		for (index = 0; index < forceSize; index++)
+			if (force[index] == pFFTC)
+				break;
+
+		assert(index < forceSize);
+
+		force[index] = force[--forceSize];
+	};
+
 private:
 	void PreCollisionUpdate(float time)
 	{
 		for (unsigned int i = 0; i < nonStaticSize; i++)
 		{
+			obj[i]->ApplyForce(time, (const UForceFieldTriggerComponent **) &force[0], forceSize);
 			obj[i]->Rotate(time);
 			obj[i]->Translate(time);
 			obj[i]->time = 0;

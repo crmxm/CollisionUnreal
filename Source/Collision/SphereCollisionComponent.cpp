@@ -3,6 +3,7 @@
 #include "Collision.h"
 #include "SphereCollisionComponent.h"
 #include "BoxCollisionComponent.h"
+#include "ForceFieldTriggerComponent.h"
 
 #include "ContactManager.h"
 
@@ -92,4 +93,25 @@ bool USphereCollisionComponent::BoxCollisionDetect(const UBoxCollisionComponent 
 void USphereCollisionComponent::DrawCollider() const
 {
 	DrawDebugSphere(GetWorld(), center, radius, 16, FColor::Green);
+}
+
+void USphereCollisionComponent::ApplyForce(float t, const UForceFieldTriggerComponent ** force, unsigned int size)
+{
+	FVector a(0, 0, 0);
+	FVector w(0, 0, 0);
+
+	for (unsigned int i = 0; i < size; i++)
+	{
+		auto f = force[i];
+		if (f->SphereCollisionDetect(this))
+		{
+			a += f->GetAcceleration(velocity);
+			w += f->GetAngularA(angularV, Sqr(radius));
+		}
+	}
+
+	velocity += a * t;
+	angularV += inertiaInv.GetScaleVector() * w * mass * t;
+
+	UCollisionComponent::ApplyForce(t, force, size);
 }

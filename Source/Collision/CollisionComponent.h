@@ -9,9 +9,12 @@
 #include "CollisionComponent.generated.h"
 
 const unsigned int MAX_CHILD_NUM = 16;
+const float vThresholdSqr = 1e-4f;
+const float wThresholdSqr = 1e-8f;
 
 class USphereCollisionComponent;
 class UBoxCollisionComponent;
+class UForceFieldTriggerComponent;
 
 //UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 UCLASS( )
@@ -119,7 +122,13 @@ public:
 	virtual bool SphereCollisionDetect(const USphereCollisionComponent *) const { return false; };
 	virtual bool BoxCollisionDetect(const UBoxCollisionComponent *) const { return false; };
 	virtual bool CollisionDetect(const UCollisionComponent * pPO) const { return false; };
-	virtual void ApplyForce(float t) {};
+	virtual void ApplyForce(float t, const UForceFieldTriggerComponent ** force, unsigned int size) 
+	{ 
+		if (velocity.SizeSquared() < vThresholdSqr)
+			velocity.Set(0, 0, 0);
+		if (angularV.SizeSquared() < wThresholdSqr)
+			angularV.Set(0, 0, 0);
+	};
 	virtual void UpdateTransform() { center = ComponentToWorld.GetLocation(); };
 	virtual void DrawCollider() const {};
 

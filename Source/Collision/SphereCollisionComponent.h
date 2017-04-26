@@ -32,5 +32,8 @@ public:
 	virtual bool CollisionDetect(const UCollisionComponent * pCO) const { return pCO->SphereCollisionDetect(this); };
 	virtual void DrawCollider() const override;
 
+	virtual void ApplyForce(float t, const UForceFieldTriggerComponent ** force, unsigned int size) override;
+
 	friend class UBoxCollisionComponent;
+	friend class UForceFieldTriggerComponent;
 };

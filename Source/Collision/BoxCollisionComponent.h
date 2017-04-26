@@ -50,7 +50,10 @@ public:
 
 	virtual void DrawCollider() const override;
 
+	virtual void ApplyForce(float t, const UForceFieldTriggerComponent ** force, unsigned int size) override;
+
 	friend static void CollisionContactBoxs(const UBoxCollisionComponent *, const UBoxCollisionComponent *);
 };
 
+bool CollisionTestBoxs(const UBoxCollisionComponent * pBCC1, const UBoxCollisionComponent * pBCC2);
 FVector ClosestPointOnBox(const FVector & v, const UBoxCollisionComponent * pBCC);
