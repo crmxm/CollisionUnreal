@@ -44,8 +44,8 @@ void ContactManager::ResolveTop()
 
 	float e = std::min(top.pCO1->rCoeff, top.pCO2->rCoeff);
 
-	FVector kAL = top.pCO1->root->ComponentToWorld.InverseTransformVector(top.kA);
-	FVector kBL = top.pCO2->root->ComponentToWorld.InverseTransformVector(top.kB);
+	FVector kAL = top.pCO1->ComponentToWorld.InverseTransformVector(top.kA);
+	FVector kBL = top.pCO2->ComponentToWorld.InverseTransformVector(top.kB);
 	FVector uAL = top.pCO1->inertiaInv.TransformVector(kAL);
 	FVector uBL = top.pCO2->inertiaInv.TransformVector(kBL);
 

@@ -8,6 +8,8 @@
 
 #include "CollisionComponent.generated.h"
 
+const unsigned int MAX_CHILD_NUM = 16;
+
 class USphereCollisionComponent;
 class UBoxCollisionComponent;
 
@@ -54,11 +56,15 @@ public:
 	FVector angularV;
 
 	UPROPERTY(EditInstanceOnly)
-	float fCoeff;
-	UPROPERTY(EditInstanceOnly)
 	float rCoeff;
 
-	USceneComponent * root;
+	unsigned int childSize = 0;
+	bool rooted = true;
+
+	UCollisionComponent * childs[MAX_CHILD_NUM];
+
+	UCollisionComponent * rootCC = this;
+	USceneComponent * root = nullptr;
 
 protected:
 	virtual void Translate(const FVector & v) 
@@ -76,19 +82,24 @@ protected:
 	{
 		float angle = v.Size();
 
-		FVector axis = v;
+		FVector axis = ComponentToWorld.InverseTransformVector(v);
 		axis.Normalize();
 
 		FQuat R(axis, angle);
-		FQuat T = root->ComponentToWorld.GetRotation();
+		//FQuat T = root->ComponentToWorld.GetRotation();
 		FQuat B = root->RelativeRotation.Quaternion();
-		FQuat AInv = B * T.Inverse();
-		FQuat Bp = AInv * R * T;
+		//FQuat AInv = B * T.Inverse();
+		//FQuat Bp = AInv * R * T;
+		FQuat C = RelativeRotation.Quaternion();
+		FQuat Bp = B * C * R * C.Inverse();
+		FVector vC = RelativeLocation;
 		root->RelativeRotation = Bp.Rotator();
+		root->RelativeLocation += B.RotateVector(vC) - Bp.RotateVector(vC);
 
 		root->UpdateComponentToWorld();
 	};
 
+	void SetChilds(UCollisionComponent * rootCC);
 
 public:
 	inline void SetImpulse(const FVector & v) { impulse += v; };
@@ -96,7 +107,7 @@ public:
 	inline void Translate(float t) { Translate(velocity * t); };
 	inline void Rotate(float t) { Rotate(angularV * t); };
 	inline void UpdateVelocity() { velocity += impulse * massInv; impulse.Set(0, 0, 0); };
-	inline void UpdateAngularV() { angularV += root->ComponentToWorld.TransformVector(inertiaInv.TransformVector(angularIL)); angularIL.Set(0, 0, 0); };
+	inline void UpdateAngularV() { angularV += ComponentToWorld.TransformVector(inertiaInv.TransformVector(angularIL)); angularIL.Set(0, 0, 0); };
 
 	virtual bool SphereCollisionDetect(const USphereCollisionComponent *) const { return false; };
 	virtual bool BoxCollisionDetect(const UBoxCollisionComponent *) const { return false; };

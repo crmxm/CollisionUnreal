@@ -42,8 +42,8 @@ bool UBoxCollisionComponent::SphereCollisionDetect(const USphereCollisionCompone
 
 static bool CollisionTestBoxs(const UBoxCollisionComponent * pBCC1, const UBoxCollisionComponent * pBCC2)
 {
-	FTransform trans1 = pBCC1->root->GetComponentToWorld();
-	FTransform trans2 = pBCC2->root->GetComponentToWorld();
+	FTransform trans1 = pBCC1->GetComponentToWorld();
+	FTransform trans2 = pBCC2->GetComponentToWorld();
 
 	FVector rx = trans2.InverseTransformVector(trans1.GetUnitAxis(EAxis::X));
 	FVector ry = trans2.InverseTransformVector(trans1.GetUnitAxis(EAxis::Y));
@@ -52,8 +52,9 @@ static bool CollisionTestBoxs(const UBoxCollisionComponent * pBCC1, const UBoxCo
 	FVector ary = ry.GetAbs();
 	FVector arz = rz.GetAbs();
 
-	FVector dist = pBCC2->center - pBCC1->center;
-	FVector d = trans1.InverseTransformVector(dist);
+	//TODO: simplify
+	//FVector dist = pBCC2->center - pBCC1->center;
+	FVector d = trans1.InverseTransformPosition(pBCC2->center);
 
 	FVector radius1 = pBCC1->radiusVector;
 	FVector radius2 = pBCC2->radiusVector;
@@ -127,7 +128,7 @@ static float ClosestPointOnSegment(const LineSegment & l1, const LineSegment & l
 
 static inline bool TestPointInBox(const FVector & v, const UBoxCollisionComponent * pBCC)
 {
-	FVector R = pBCC->root->ComponentToWorld.InverseTransformPosition(v);
+	FVector R = pBCC->ComponentToWorld.InverseTransformPosition(v);
 	FVector D = pBCC->radiusVector - R.GetAbs();
 
 	return D.GetMin() > 0;
@@ -141,8 +142,8 @@ static void CollisionContactBoxs(const UBoxCollisionComponent * pBCC1, const UBo
 	FVector nVectexSurface;
 	bool isNormalPointTo2 = false;
 
-	FTransform trans1 = pBCC1->root->GetComponentToWorld();
-	FTransform trans2 = pBCC2->root->GetComponentToWorld();
+	FTransform trans1 = pBCC1->GetComponentToWorld();
+	FTransform trans2 = pBCC2->GetComponentToWorld();
 
 	float temp;
 
@@ -246,12 +247,12 @@ void UBoxCollisionComponent::DrawCollider() const
 }
 FVector ClosestPointOnBox(const FVector & v, const UBoxCollisionComponent * pBCC)
 {
-	FVector vL = pBCC->root->ComponentToWorld.InverseTransformPosition(v);
+	FVector vL = pBCC->ComponentToWorld.InverseTransformPosition(v);
 	FVector radius = pBCC->radiusVector;
 
 	vL.X = clamp(vL.X, -radius.X, radius.X);
 	vL.Y = clamp(vL.Y, -radius.Y, radius.Y);
 	vL.Z = clamp(vL.Z, -radius.Z, radius.Z);
 
-	return pBCC->root->ComponentToWorld.TransformPosition(vL);
+	return pBCC->ComponentToWorld.TransformPosition(vL);
 }

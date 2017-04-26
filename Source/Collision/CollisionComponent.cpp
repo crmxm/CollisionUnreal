@@ -21,13 +21,16 @@ void UCollisionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UpdateTransform();
-
 	isStatic |= isTrigger;
 
-	CollisionManager::instance->AddObj(this);
+	if (rooted)
+	{
+		CollisionManager::instance->AddObj(this);
+		root = GetAttachmentRoot();
+		SetChilds(this);
 
-	root = GetAttachmentRoot();
+		UpdateTransform();
+	}
 
 	if (isStatic)
 	{
@@ -55,4 +58,23 @@ void UCollisionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 void UCollisionComponent::OnUpdateTransform(EUpdateTransformFlags flags, ETeleportType teleport)
 {
 	UpdateTransform();
+}
+
+void UCollisionComponent::SetChilds(UCollisionComponent * rootCC)
+{
+	auto & childComponents = GetAttachChildren();
+	
+	for (auto c : childs)
+	{
+		auto p = dynamic_cast<UCollisionComponent *> (c);
+		if (!p)
+			continue;
+
+		childs[childSize++] = c;
+
+		c->rootCC = rootCC;
+		c->root = rootCC->root;
+		c->SetChilds(rootCC);
+	}
+	return;
 }
