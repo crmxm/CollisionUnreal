@@ -21,9 +21,18 @@ void UCollisionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	isStatic |= isTrigger;
+
 	CollisionManager::instance->AddObj(this);
 
 	root = GetAttachmentRoot();
+
+	if (isStatic)
+	{
+		mass = 0;
+		velocity.Set(0, 0, 0);
+		angularV.Set(0, 0, 0);
+	}
 	// ...
 	
 }

@@ -39,6 +39,9 @@ void ContactManager::ResolveTop()
 
 	contacts.pop();
 
+	if (top.pCO1->isTrigger || top.pCO2->isTrigger)
+		return;
+
 	float e = std::min(top.pCO1->rCoeff, top.pCO2->rCoeff);
 
 	FVector kAL = top.pCO1->root->ComponentToWorld.InverseTransformVector(top.kA);

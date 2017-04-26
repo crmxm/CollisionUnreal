@@ -15,7 +15,10 @@ void UBoxCollisionComponent::BeginPlay()
 	inertia.M[1][1] = mass * (temp - Sqr(radiusVector.Y)) / 3;
 	inertia.M[2][2] = mass * (temp - Sqr(radiusVector.Z)) / 3;
 	inertia.M[3][3] = 1;
-	inertiaInv = inertia.Inverse();
+	if (mass != 0)
+		inertiaInv = inertia.Inverse();
+	else
+		inertiaInv = inertia;
 
 	center = root->ComponentToWorld.TransformPosition(centerL);
 	SetVertice();
@@ -133,6 +136,7 @@ static inline bool TestPointInBox(const FVector & v, const UBoxCollisionComponen
 static void CollisionContactBoxs(const UBoxCollisionComponent * pBCC1, const UBoxCollisionComponent * pBCC2)
 {
 	float distVertexSurface = pBCC1->radiusVector.Size();
+	bool isVertexSurface = false;
 	FVector vVertexSurface;
 	FVector nVectexSurface;
 	bool isNormalPointTo2 = false;
@@ -152,6 +156,7 @@ static void CollisionContactBoxs(const UBoxCollisionComponent * pBCC1, const UBo
 
 		if (temp > 0 && temp < distVertexSurface)
 		{
+			isVertexSurface = true;
 			distVertexSurface = temp;
 			isNormalPointTo2 = true;
 			vVertexSurface = vertex;
@@ -169,6 +174,7 @@ static void CollisionContactBoxs(const UBoxCollisionComponent * pBCC1, const UBo
 
 		if (temp > 0 && temp < distVertexSurface)
 		{
+			isVertexSurface = true;
 			distVertexSurface = temp;
 			isNormalPointTo2 = false;
 			vVertexSurface = vertex;
@@ -208,7 +214,7 @@ static void CollisionContactBoxs(const UBoxCollisionComponent * pBCC1, const UBo
 	float distEdges = nEdges.Size();
 	nEdges.Normalize();
 
-	if (distVertexSurface > distEdges)
+	if (isVertexSurface && distVertexSurface > distEdges)
 		ContactManager::instance->AddContact((UCollisionComponent *)((isNormalPointTo2) ? pBCC1 : pBCC2),
 		(UCollisionComponent *)((isNormalPointTo2) ? pBCC2 : pBCC1), distVertexSurface, nVectexSurface, vVertexSurface);
 	else

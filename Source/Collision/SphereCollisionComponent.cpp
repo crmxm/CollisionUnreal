@@ -13,7 +13,10 @@ void USphereCollisionComponent::BeginPlay()
 	massInv = (mass == 0) ? 0 : 1.0f / mass;
 	inertia.M[0][0] = inertia.M[1][1] = inertia.M[2][2] = 2 * mass * radius * radius / 5;
 	inertia.M[3][3] = 1;
-	inertiaInv = inertia.Inverse();
+	if (mass != 0)
+		inertiaInv = inertia.Inverse();
+	else
+		inertiaInv = inertia;
 
 	center = root->ComponentToWorld.TransformPosition(centerL);
 }

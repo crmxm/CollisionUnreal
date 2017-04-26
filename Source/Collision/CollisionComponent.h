@@ -32,11 +32,14 @@ public:
 protected:
 	FVector centerL;
 	FVector impulse;
-	FVector angularI;
+	FVector angularIL;
 
 public:
 	UPROPERTY(EditInstanceOnly)
 	bool isStatic;
+	UPROPERTY(EditInstanceOnly)
+	bool isTrigger;
+
 	float time;
 	UPROPERTY(EditInstanceOnly)
 	float mass;
@@ -89,11 +92,11 @@ protected:
 
 public:
 	inline void SetImpulse(const FVector & v) { impulse += v; };
-	inline void SetAngularI(const FVector & v) { angularI += v; };
+	inline void SetAngularI(const FVector & v) { angularIL += v; };
 	inline void Translate(float t) { Translate(velocity * t); };
 	inline void Rotate(float t) { Rotate(angularV * t); };
 	inline void UpdateVelocity() { velocity += impulse * massInv; impulse.Set(0, 0, 0); };
-	inline void UpdateAngularV() { angularV += inertiaInv.TransformVector(angularI); angularI.Set(0, 0, 0); };
+	inline void UpdateAngularV() { angularV += root->ComponentToWorld.TransformVector(inertiaInv.TransformVector(angularIL)); angularIL.Set(0, 0, 0); };
 
 	virtual bool SphereCollisionDetect(const USphereCollisionComponent *) const { return false; };
 	virtual bool BoxCollisionDetect(const UBoxCollisionComponent *) const { return false; };
