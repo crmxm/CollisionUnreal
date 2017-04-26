@@ -25,13 +25,12 @@ private:
 	float radius;
 
 protected:
-
-	virtual void Translate(const FVector & v) override { UCollisionComponent::Translate(v); };
-	virtual void Rotate(const FVector & v) override { UCollisionComponent::Rotate(v); };
 public:
 	virtual bool SphereCollisionDetect(const USphereCollisionComponent * pSCO) const;
 	virtual bool BoxCollisionDetect(const UBoxCollisionComponent * pBCO) const;
 
 	virtual bool CollisionDetect(const UCollisionComponent * pCO) const { return pCO->SphereCollisionDetect(this); };
+	virtual void DrawCollider() const override;
+
 	friend class UBoxCollisionComponent;
 };

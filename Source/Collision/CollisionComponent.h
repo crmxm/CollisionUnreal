@@ -29,8 +29,9 @@ public:
 	// Called every frame
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
+	virtual void OnUpdateTransform(EUpdateTransformFlags flags, ETeleportType teleport) override;
+
 protected:
-	FVector centerL;
 	FVector impulse;
 	FVector angularIL;
 
@@ -62,7 +63,6 @@ public:
 protected:
 	virtual void Translate(const FVector & v) 
 	{ 
-		center += v; 
 		FQuat T = root->ComponentToWorld.GetRotation();
 		FQuat B = root->RelativeRotation.Quaternion();
 		FQuat AInv = B * T.Inverse();
@@ -102,6 +102,8 @@ public:
 	virtual bool BoxCollisionDetect(const UBoxCollisionComponent *) const { return false; };
 	virtual bool CollisionDetect(const UCollisionComponent * pPO) const { return false; };
 	virtual void ApplyForce(float t) {};
+	virtual void UpdateTransform() { center = ComponentToWorld.GetLocation(); };
+	virtual void DrawCollider() const {};
 
 	friend class ACollisionManagerActor;
 };

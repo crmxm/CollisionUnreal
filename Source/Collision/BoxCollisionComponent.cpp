@@ -20,8 +20,8 @@ void UBoxCollisionComponent::BeginPlay()
 	else
 		inertiaInv = inertia;
 
-	center = root->ComponentToWorld.TransformPosition(centerL);
-	SetVertice();
+	//center = root->ComponentToWorld.TransformPosition(centerL);
+	//SetVertice();
 }
 
 bool UBoxCollisionComponent::SphereCollisionDetect(const USphereCollisionComponent * pSCC) const
@@ -233,6 +233,17 @@ bool UBoxCollisionComponent::BoxCollisionDetect(const UBoxCollisionComponent * p
 	return true;
 }
 
+void UBoxCollisionComponent::DrawCollider() const
+{
+	const unsigned int EdgeVertexLUT[12][2] = { 
+		{0, 1}, {2, 3}, {4, 5}, {6, 7}, 
+		{0, 2}, {1, 3}, {4, 6}, {5, 7}, 
+		{0, 4}, {1, 5}, {2, 6}, {3, 7} 
+	};
+	
+	for (auto pair : EdgeVertexLUT)
+		DrawDebugLine(GetWorld(), vertice[pair[0]], vertice[pair[1]], FColor::Green);
+}
 FVector ClosestPointOnBox(const FVector & v, const UBoxCollisionComponent * pBCC)
 {
 	FVector vL = pBCC->root->ComponentToWorld.InverseTransformPosition(v);

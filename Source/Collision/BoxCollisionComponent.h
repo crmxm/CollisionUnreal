@@ -24,36 +24,31 @@ public:
 private:
 	void SetVertice()
 	{
-		vertice[0] = centerL - radiusVector;
-		vertice[1] = centerL + FVector(-radiusVector.X, -radiusVector.Y,  radiusVector.Z);
-		vertice[2] = centerL + FVector(-radiusVector.X,  radiusVector.Y, -radiusVector.Z);
-		vertice[3] = centerL + FVector(-radiusVector.X,  radiusVector.Y,  radiusVector.Z);
-		vertice[4] = centerL + FVector( radiusVector.X, -radiusVector.Y, -radiusVector.Z);
-		vertice[5] = centerL + FVector( radiusVector.X, -radiusVector.Y,  radiusVector.Z);
-		vertice[6] = centerL + FVector( radiusVector.X,  radiusVector.Y, -radiusVector.Z);
-		vertice[7] = centerL + radiusVector;
+		vertice[0] = -radiusVector;
+		vertice[1] = FVector(-radiusVector.X, -radiusVector.Y,  radiusVector.Z);
+		vertice[2] = FVector(-radiusVector.X,  radiusVector.Y, -radiusVector.Z);
+		vertice[3] = FVector(-radiusVector.X,  radiusVector.Y,  radiusVector.Z);
+		vertice[4] = FVector( radiusVector.X, -radiusVector.Y, -radiusVector.Z);
+		vertice[5] = FVector( radiusVector.X, -radiusVector.Y,  radiusVector.Z);
+		vertice[6] = FVector( radiusVector.X,  radiusVector.Y, -radiusVector.Z);
+		vertice[7] = radiusVector;
 
 		for (auto & vertex : vertice)
-			vertex = root->ComponentToWorld.TransformPosition(vertex);
+			vertex = ComponentToWorld.TransformPosition(vertex);
 	};
 public:
-	virtual void Translate(const FVector & v) override 
-	{ 
-		UCollisionComponent::Translate(v); 
-		for (auto & vertex : vertice)
-			vertex += v;
-	};
-
-	virtual void Rotate(const FVector & v) override
-	{
-		UCollisionComponent::Rotate(v);
-		SetVertice();
-	};
-
 	virtual bool SphereCollisionDetect(const USphereCollisionComponent * pSCC) const override;
 	virtual bool BoxCollisionDetect(const UBoxCollisionComponent * pBCC) const override;
 
 	virtual bool CollisionDetect(const UCollisionComponent * pCC) const override { return pCC->BoxCollisionDetect(this); };
+
+	virtual void UpdateTransform() override
+	{
+		UCollisionComponent::UpdateTransform();
+		SetVertice();
+	}
+
+	virtual void DrawCollider() const override;
 
 	friend static void CollisionContactBoxs(const UBoxCollisionComponent *, const UBoxCollisionComponent *);
 };

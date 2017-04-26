@@ -18,7 +18,7 @@ void USphereCollisionComponent::BeginPlay()
 	else
 		inertiaInv = inertia;
 
-	center = root->ComponentToWorld.TransformPosition(centerL);
+	//center = root->ComponentToWorld.TransformPosition(centerL);
 }
 
 bool USphereCollisionComponent::SphereCollisionDetect(const USphereCollisionComponent * pSCC) const
@@ -51,4 +51,9 @@ bool USphereCollisionComponent::BoxCollisionDetect(const UBoxCollisionComponent 
 	ContactManager::instance->AddContact((UCollisionComponent *) pBCC, (UCollisionComponent *)this,
 		radius - f, dist, point);
 	return true;
+}
+
+void USphereCollisionComponent::DrawCollider() const
+{
+	DrawDebugSphere(GetWorld(), center, radius, 16, FColor::Green);
 }

@@ -6,13 +6,13 @@
 #include "CollisionManager.h"
 
 // Sets default values for this component's properties
-UCollisionComponent::UCollisionComponent()
+UCollisionComponent::UCollisionComponent() 
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
-
-	// ...
+	PrimaryComponentTick.bCanEverTick = true;
+	bTickInEditor = true;
+	bWantsOnUpdateTransform = true;
 }
 
 
@@ -20,6 +20,8 @@ UCollisionComponent::UCollisionComponent()
 void UCollisionComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UpdateTransform();
 
 	isStatic |= isTrigger;
 
@@ -33,8 +35,6 @@ void UCollisionComponent::BeginPlay()
 		velocity.Set(0, 0, 0);
 		angularV.Set(0, 0, 0);
 	}
-	// ...
-	
 }
 
 void UCollisionComponent::EndPlay(const EEndPlayReason::Type reason)
@@ -45,10 +45,14 @@ void UCollisionComponent::EndPlay(const EEndPlayReason::Type reason)
 
 
 // Called every frame
-void UCollisionComponent::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
+void UCollisionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	DrawCollider();
 }
 
+void UCollisionComponent::OnUpdateTransform(EUpdateTransformFlags flags, ETeleportType teleport)
+{
+	UpdateTransform();
+}
