@@ -28,9 +28,9 @@ void UCollisionComponent::BeginPlay()
 		CollisionManager::instance->AddObj(this);
 		root = GetAttachmentRoot();
 		SetChilds(this);
-
-		UpdateTransform();
 	}
+
+	UpdateTransform();
 
 	if (isStatic)
 	{
@@ -42,7 +42,7 @@ void UCollisionComponent::BeginPlay()
 
 void UCollisionComponent::EndPlay(const EEndPlayReason::Type reason)
 {
-	if (reason == EEndPlayReason::Destroyed)
+	if (reason == EEndPlayReason::Destroyed && rooted)
 		CollisionManager::instance->RemoveObj(this);
 }
 
@@ -64,17 +64,16 @@ void UCollisionComponent::SetChilds(UCollisionComponent * rootCC)
 {
 	auto & childComponents = GetAttachChildren();
 	
-	for (auto c : childs)
+	for (auto c : childComponents)
 	{
 		auto p = dynamic_cast<UCollisionComponent *> (c);
 		if (!p)
 			continue;
 
-		childs[childSize++] = c;
+		childs[childSize++] = p;
 
-		c->rootCC = rootCC;
-		c->root = rootCC->root;
-		c->SetChilds(rootCC);
+		p->rootCC = rootCC;
+		p->SetChilds(rootCC);
 	}
 	return;
 }

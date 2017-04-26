@@ -59,6 +59,7 @@ public:
 	float rCoeff;
 
 	unsigned int childSize = 0;
+	UPROPERTY(EditInstanceOnly)
 	bool rooted = true;
 
 	UCollisionComponent * childs[MAX_CHILD_NUM];
@@ -69,6 +70,9 @@ public:
 protected:
 	virtual void Translate(const FVector & v) 
 	{ 
+		if (!rooted)
+			return;
+
 		FQuat T = root->ComponentToWorld.GetRotation();
 		FQuat B = root->RelativeRotation.Quaternion();
 		FQuat AInv = B * T.Inverse();
@@ -80,6 +84,9 @@ protected:
 
 	virtual void Rotate(const FVector & v) 
 	{
+		if (!rooted)
+			return;
+
 		float angle = v.Size();
 
 		FVector axis = ComponentToWorld.InverseTransformVector(v);

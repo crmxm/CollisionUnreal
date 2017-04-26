@@ -14,6 +14,9 @@ const float EPSILON_TIME = 1e-4f;
 
 void ContactManager::AddContact(UCollisionComponent * pCO1, UCollisionComponent * pCO2, float d, const FVector & normal, const FVector & contactPoint)
 {
+	pCO1 = pCO1->rootCC;
+	pCO2 = pCO2->rootCC;
+
 	FVector rA = contactPoint - pCO1->center;
 	FVector rB = contactPoint - pCO2->center;
 

@@ -32,6 +32,24 @@ bool UBoxCollisionComponent::SphereCollisionDetect(const USphereCollisionCompone
 	if (dist.SizeSquared() > Sqr(pSCC->radius))
 		return false;
 
+	if (childSize)
+	{
+		bool b = false;
+		for (unsigned int i = 0; i < childSize; i++)
+			b |= childs[i]->SphereCollisionDetect(pSCC);
+
+		return b;
+	}
+
+	if (pSCC->childSize)
+	{
+		bool b = false;
+		for (unsigned int i = 0; i < pSCC->childSize; i++)
+			b |= pSCC->childs[i]->BoxCollisionDetect(this);
+
+		return b;
+	}
+
 	float f = dist.Size();
 	dist.Normalize();
 
@@ -229,6 +247,24 @@ bool UBoxCollisionComponent::BoxCollisionDetect(const UBoxCollisionComponent * p
 	if (!CollisionTestBoxs(this, pBCC))
 		return false;
 	
+	if (childSize)
+	{
+		bool b = false;
+		for (unsigned int i = 0; i < childSize; i++)
+			b |= childs[i]->BoxCollisionDetect(pBCC);
+
+		return b;
+	}
+
+	if (pBCC->childSize)
+	{
+		bool b = false;
+		for (unsigned int i = 0; i < pBCC->childSize; i++)
+			b |= pBCC->childs[i]->BoxCollisionDetect(this);
+
+		return b;
+	}
+
 	CollisionContactBoxs(this, pBCC);
 
 	return true;
@@ -245,6 +281,7 @@ void UBoxCollisionComponent::DrawCollider() const
 	for (auto pair : EdgeVertexLUT)
 		DrawDebugLine(GetWorld(), vertice[pair[0]], vertice[pair[1]], FColor::Green);
 }
+
 FVector ClosestPointOnBox(const FVector & v, const UBoxCollisionComponent * pBCC)
 {
 	FVector vL = pBCC->ComponentToWorld.InverseTransformPosition(v);

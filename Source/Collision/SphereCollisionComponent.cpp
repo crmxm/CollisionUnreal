@@ -28,6 +28,24 @@ bool USphereCollisionComponent::SphereCollisionDetect(const USphereCollisionComp
 	if (dist.SizeSquared() > Sqr(radius + pSCC->radius))
 		return false;
 
+	if (childSize)
+	{
+		bool b = false;
+		for (unsigned int i = 0; i < childSize; i++)
+			b |= childs[i]->SphereCollisionDetect(pSCC);
+
+		return b;
+	}
+
+	if (pSCC->childSize)
+	{
+		bool b = false;
+		for (unsigned int i = 0; i < pSCC->childSize; i++)
+			b |= pSCC->childs[i]->SphereCollisionDetect(this);
+
+		return b;
+	}
+
 	float f = dist.Size();
 	dist.Normalize();
 
@@ -44,6 +62,24 @@ bool USphereCollisionComponent::BoxCollisionDetect(const UBoxCollisionComponent 
 
 	if (dist.SizeSquared() > Sqr(radius))
 		return false;
+
+	if (childSize)
+	{
+		bool b = false;
+		for (unsigned int i = 0; i < childSize; i++)
+			b |= childs[i]->BoxCollisionDetect(pBCC);
+
+		return b;
+	}
+
+	if (pBCC->childSize)
+	{
+		bool b = false;
+		for (unsigned int i = 0; i < pBCC->childSize; i++)
+			b |= pBCC->childs[i]->SphereCollisionDetect(this);
+
+		return b;
+	}
 
 	float f = dist.Size();
 	dist.Normalize();
