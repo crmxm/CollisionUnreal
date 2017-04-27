@@ -20,7 +20,11 @@ void CollisionManager::Update(float time)
 	PreCollisionUpdate(time);
 	for (unsigned int i = 0; i < nonStaticSize; i++)
 		for (unsigned int j = i + 1; j < size; j++)
-			obj[i]->CollisionDetect(obj[j]);
+		{
+			bool b = obj[i]->CollisionDetect(obj[j]);
+			obj[i]->isCollided |= b;
+			obj[j]->isCollided |= b;
+		}
 
 	ContactManager::instance->Resolve();
 	PostCollisionDetect();

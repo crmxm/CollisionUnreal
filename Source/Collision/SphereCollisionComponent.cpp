@@ -29,6 +29,8 @@ bool USphereCollisionComponent::SphereCollisionDetect(const USphereCollisionComp
 	if (dist.SizeSquared() > Sqr(radius + pSCC->radius))
 		return false;
 
+	isCollided = pSCC->isCollided = true;
+
 	if (childSize)
 	{
 		bool b = false;
@@ -64,6 +66,8 @@ bool USphereCollisionComponent::BoxCollisionDetect(const UBoxCollisionComponent 
 	if (dist.SizeSquared() > Sqr(radius))
 		return false;
 
+	isCollided = pBCC->isCollided = true;
+
 	if (childSize)
 	{
 		bool b = false;
@@ -92,7 +96,7 @@ bool USphereCollisionComponent::BoxCollisionDetect(const UBoxCollisionComponent 
 
 void USphereCollisionComponent::DrawCollider() const
 {
-	DrawDebugSphere(GetWorld(), center, radius, 16, FColor::Green);
+	DrawDebugSphere(GetWorld(), center, radius, 16, (isCollided) ? FColor::Red : FColor::Green);
 }
 
 void USphereCollisionComponent::ApplyForce(float t, const UForceFieldTriggerComponent ** force, unsigned int size)

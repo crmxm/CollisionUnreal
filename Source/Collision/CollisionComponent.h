@@ -69,6 +69,7 @@ public:
 
 	UCollisionComponent * rootCC = this;
 	USceneComponent * root = nullptr;
+	mutable bool isCollided = false;
 
 protected:
 	virtual void Translate(const FVector & v) 

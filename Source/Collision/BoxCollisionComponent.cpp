@@ -34,6 +34,8 @@ bool UBoxCollisionComponent::SphereCollisionDetect(const USphereCollisionCompone
 	if (dist.SizeSquared() > Sqr(pSCC->radius))
 		return false;
 
+	isCollided = pSCC->isCollided = true;
+
 	if (childSize)
 	{
 		bool b = false;
@@ -249,6 +251,8 @@ bool UBoxCollisionComponent::BoxCollisionDetect(const UBoxCollisionComponent * p
 	if (!CollisionTestBoxs(this, pBCC))
 		return false;
 	
+	isCollided = pBCC->isCollided = true;
+
 	if (childSize)
 	{
 		bool b = false;
@@ -281,7 +285,7 @@ void UBoxCollisionComponent::DrawCollider() const
 	};
 	
 	for (auto pair : EdgeVertexLUT)
-		DrawDebugLine(GetWorld(), vertice[pair[0]], vertice[pair[1]], FColor::Green);
+		DrawDebugLine(GetWorld(), vertice[pair[0]], vertice[pair[1]], (isCollided) ? FColor::Red :FColor::Green);
 }
 
 void UBoxCollisionComponent::ApplyForce(float t, const UForceFieldTriggerComponent ** force, unsigned int size)

@@ -94,6 +94,9 @@ private:
 			obj[i]->Translate(time);
 			obj[i]->time = 0;
 		}
+
+		for (unsigned int i = 0; i < size; i++)
+			obj[i]->isCollided = false;
 	};
 
 	void PostCollisionDetect() {
