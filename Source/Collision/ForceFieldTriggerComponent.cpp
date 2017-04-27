@@ -29,7 +29,7 @@ bool UForceFieldTriggerComponent::SphereCollisionDetect(const USphereCollisionCo
 	FVector point = ClosestPointOnBox(pSCC->center, this);
 	FVector dist = point - pSCC->center;
 
-	if (dist.SizeSquared() > Sqr(pSCC->radius))
+	if (dist.SizeSquared() > 1e-4)
 		return false;
 	
 	return true;
@@ -37,7 +37,10 @@ bool UForceFieldTriggerComponent::SphereCollisionDetect(const USphereCollisionCo
 
 bool UForceFieldTriggerComponent::BoxCollisionDetect(const UBoxCollisionComponent * pBCC) const
 {
-	if (!CollisionTestBoxs(this, pBCC))
+	FVector point = ClosestPointOnBox(pBCC->center, this);
+	FVector dist = point - pBCC->center;
+
+	if (dist.SizeSquared() > 1e-4)
 		return false;
 
 	return true;
