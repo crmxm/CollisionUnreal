@@ -36,6 +36,7 @@ public:
 	~CollisionManager() {};
 
 	void Update(float time);
+	bool GetWorking() { return isWorking; };
 	void SetWorking(bool b) { isWorking = b; };
 	void AddObj(UCollisionComponent * pCO) 
 	{
@@ -89,6 +90,8 @@ private:
 	{
 		for (unsigned int i = 0; i < nonStaticSize; i++)
 		{
+			if (obj[i]->isDebugStopped)
+				continue;
 			obj[i]->ApplyForce(time, (const UForceFieldTriggerComponent **) &force[0], forceSize);
 			obj[i]->Rotate(time);
 			obj[i]->Translate(time);
@@ -102,6 +105,8 @@ private:
 	void PostCollisionDetect() {
 		for (unsigned int i = 0; i < nonStaticSize; i++)
 		{
+			if (obj[i]->isDebugStopped)
+				continue;
 			obj[i]->Translate(-obj[i]->time);
 			obj[i]->Rotate(-obj[i]->time);
 			obj[i]->UpdateVelocity();

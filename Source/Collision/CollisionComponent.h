@@ -65,11 +65,15 @@ public:
 	UPROPERTY(EditInstanceOnly)
 	bool rooted = true;
 
+	UPROPERTY(EditInstanceOnly)
+	unsigned int gID = 31;
+
 	UCollisionComponent * childs[MAX_CHILD_NUM];
 
 	UCollisionComponent * rootCC = this;
 	USceneComponent * root = nullptr;
 	mutable bool isCollided = false;
+	mutable bool isDebugStopped = false;
 
 protected:
 	virtual void Translate(const FVector & v) 

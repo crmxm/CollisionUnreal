@@ -6,6 +6,8 @@
 #include "CollisionManager.h"
 #include "ContactManager.h"
 
+#include <thread>
+
 // Sets default values
 ACollisionManagerActor::ACollisionManagerActor()
 {
@@ -25,8 +27,15 @@ void ACollisionManagerActor::BeginPlay()
 
 	if (InputComponent)
 	{
-		InputComponent->BindAction("DebugInput0", EInputEvent::IE_Pressed, this, &ACollisionManagerActor::DebugRotate);
-		InputComponent->BindAction("DebugInput1", EInputEvent::IE_Pressed, this, &ACollisionManagerActor::DebugSpeedUp);
+		InputComponent->BindAction("DebugInput0", EInputEvent::IE_Pressed, this, &ACollisionManagerActor::ToggleWorking);
+		InputComponent->BindAction("DebugInput1", EInputEvent::IE_Pressed, this, &ACollisionManagerActor::StartDebugStopMode);
+
+		InputComponent->BindAction("Group1", EInputEvent::IE_Pressed, this, &ACollisionManagerActor::ToggleGroup<0>);
+		InputComponent->BindAction("Group2", EInputEvent::IE_Pressed, this, &ACollisionManagerActor::ToggleGroup<1>);
+		InputComponent->BindAction("Group3", EInputEvent::IE_Pressed, this, &ACollisionManagerActor::ToggleGroup<2>);
+		InputComponent->BindAction("Group4", EInputEvent::IE_Pressed, this, &ACollisionManagerActor::ToggleGroup<3>);
+		InputComponent->BindAction("Group5", EInputEvent::IE_Pressed, this, &ACollisionManagerActor::ToggleGroup<4>);
+		InputComponent->BindAction("Group6", EInputEvent::IE_Pressed, this, &ACollisionManagerActor::ToggleGroup<5>);
 	}
 
 	CollisionManager::instance->SetWorking(false);
@@ -59,4 +68,26 @@ void ACollisionManagerActor::DebugRotate()
 void ACollisionManagerActor::DebugSpeedUp()
 {
 	CollisionManager::instance->SetWorking(true);
+}
+
+void ACollisionManagerActor::ToggleWorking()
+{
+	CollisionManager::instance->SetWorking(!CollisionManager::instance->GetWorking());
+}
+
+void ACollisionManagerActor::StartDebugStopMode()
+{
+	for (unsigned int i = 0; i < CollisionManager::instance->size; i++)
+		if (CollisionManager::instance->obj[i]->gID != 31)
+			CollisionManager::instance->obj[i]->isDebugStopped = true;
+
+	CollisionManager::instance->SetWorking(true);
+}
+
+template<unsigned int N>
+void ACollisionManagerActor::ToggleGroup()
+{
+	for (unsigned int i = 0; i < CollisionManager::instance->size; i++)
+		if (CollisionManager::instance->obj[i]->gID == N)
+			CollisionManager::instance->obj[i]->isDebugStopped = false;
 }

@@ -19,12 +19,19 @@ void CollisionManager::Update(float time)
 
 	PreCollisionUpdate(time);
 	for (unsigned int i = 0; i < nonStaticSize; i++)
+	{
+		if (obj[i]->isDebugStopped)
+			continue;
 		for (unsigned int j = i + 1; j < size; j++)
 		{
+			if (obj[j]->isDebugStopped)
+				continue;
+
 			bool b = obj[i]->CollisionDetect(obj[j]);
 			obj[i]->isCollided |= b;
 			obj[j]->isCollided |= b;
 		}
+	}
 
 	ContactManager::instance->Resolve();
 	PostCollisionDetect();

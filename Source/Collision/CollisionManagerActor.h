@@ -5,6 +5,8 @@
 #include "GameFramework/Actor.h"
 #include "CollisionManagerActor.generated.h"
 
+class UCollisionComponent;
+
 UCLASS()
 class COLLISION_API ACollisionManagerActor : public AActor
 {
@@ -25,6 +27,13 @@ public:
 	virtual ~ACollisionManagerActor() override;
 
 public:
+
 	void DebugRotate();
 	void DebugSpeedUp();
+	
+	void ToggleWorking();
+	void StartDebugStopMode();
+
+	template<unsigned int N>
+	void ToggleGroup();
 };
