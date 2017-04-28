@@ -52,7 +52,8 @@ void UCollisionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	DrawCollider();
+	if (!isDebugStopped)
+		DrawCollider();
 }
 
 void UCollisionComponent::OnUpdateTransform(EUpdateTransformFlags flags, ETeleportType teleport)

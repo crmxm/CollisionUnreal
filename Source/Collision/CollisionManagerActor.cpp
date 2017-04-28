@@ -90,4 +90,6 @@ void ACollisionManagerActor::ToggleGroup()
 	for (unsigned int i = 0; i < CollisionManager::instance->size; i++)
 		if (CollisionManager::instance->obj[i]->gID == N)
 			CollisionManager::instance->obj[i]->isDebugStopped = false;
+		else
+			CollisionManager::instance->obj[i]->isDebugStopped = true;
 }
